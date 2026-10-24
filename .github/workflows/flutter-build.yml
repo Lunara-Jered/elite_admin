@@ -8,9 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ─────────────────────────────────────────
-  # JOB 1 : TESTS
-  # ─────────────────────────────────────────
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -27,13 +24,12 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: flutter  # <-- AJOUT ICI
 
       - name: Run tests
         run: flutter test
+        working-directory: flutter  # <-- AJOUT ICI
 
-  # ─────────────────────────────────────────
-  # JOB 2 : BUILD ANDROID
-  # ─────────────────────────────────────────
   build-android:
     name: Build Android
     needs: test
@@ -57,21 +53,14 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: flutter  # <-- AJOUT ICI
 
       - name: Build APK (release)
         run: flutter build apk --release
-
-      - name: Build App Bundle (AAB)
-        run: flutter build appbundle --release
+        working-directory: flutter  # <-- AJOUT ICI
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Upload AAB as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: flutter/build/app/outputs/flutter-apk/app-release.apk # <-- ATTENTION AU CHEMIN ICI
